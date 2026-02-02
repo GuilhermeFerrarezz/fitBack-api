@@ -9,6 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 (async () => {
     try {
         await sequelize.authenticate();
