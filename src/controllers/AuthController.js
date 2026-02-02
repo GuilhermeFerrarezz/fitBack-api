@@ -6,10 +6,10 @@ import User from '../models/user.js';
 import { JWT_SECRET } from '../middlewares/auth.js';
 import RefreshToken from '../models/RefreshToken.js';
 import { v4 as uuidv4 } from 'uuid';
-
+import { Op } from 'sequelize'; 
 const createRefreshToken = async (user) => {
         const expiresAt = new Date();
-        expiresAt.setSeconds(expiresAt.getSeconds() + 86400);
+        expiresAt.setSeconds(expiresAt.getSeconds() + 604800);
         const token = uuidv4();
         const refreshToken = await RefreshToken.create({
             token: token,
@@ -48,6 +48,7 @@ export default {
 
     async login(req, res) {
         try {
+            
             const { email, password } = req.body;
             if (!email || !password) {
                 return res.status(400).json({ message: 'E-mail e senha são obrigatórios' });
@@ -56,6 +57,14 @@ export default {
             if (!user || !user.password) {
                 return res.status(401).json({ message: "Credenciais inválidas" });
             }
+            await RefreshToken.destroy({
+                where: {
+                    userId: user.id,
+                    expiresAt: {
+                        [Op.lt]: new Date().getTime()
+                    }
+                }
+            });
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 return res.status(401).json({ message: "Credenciais inválidas" });
@@ -87,7 +96,7 @@ export default {
         try {
             const refreshToken = await RefreshToken.findOne({ where: { token: requestToken } })
             if (!refreshToken) {
-                return res.status(403).json({ message: "Refresh token is not in the database!" })
+                return res.status(403).json({ message: "Refresh token is not valid" })
             }
             if (RefreshToken.verifyExpiration(refreshToken)) {
                 RefreshToken.destroy({ where: { id: refreshToken.id } })
@@ -96,6 +105,10 @@ export default {
                 })
             }
             const user = await User.findByPk(refreshToken.userId);
+
+            await RefreshToken.destroy({ where: { id: refreshToken.id } });
+            const newRefreshToken = await createRefreshToken(user);
+
 
             const payload = {
                 id: user.id,
@@ -109,7 +122,7 @@ export default {
             );
             return res.status(200).json({
                 accessToken: newAccessToken,
-                refreshToken: refreshToken.token
+                refreshToken: newRefreshToken
             })
 
 
@@ -120,13 +133,16 @@ export default {
 
     async logout(req, res) {
         try {
+            console.log('logout')
             const { requestToken } = req.body;
+            console.log(requestToken)
             if (!requestToken) {
                 return res.status(400).json({ message: "Refresh Token is required to logout" })
             }
             await RefreshToken.destroy({ where: { token: requestToken } });
             return res.status(200).json({ message: "Logout successful" })
         } catch (err) {
+            console.error("ERRO NO LOGOUT:", err);
             return res.status(500).send({ message: err })
         }
 
