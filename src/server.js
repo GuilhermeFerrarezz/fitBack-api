@@ -1,14 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
 import sequelize from './config/database.js';
-import User from './models/user.js';
+import authRoutes from "./routes/authRoutes.js"
 dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (_, res) => res.status(200).json({ message: "API enabled" }));
+app.use("/fitback/auth", authRoutes);
 
 (async () => {
     try {

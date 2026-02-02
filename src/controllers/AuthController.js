@@ -8,8 +8,8 @@ import { JWT_SECRET } from '../middlewares/auth.js';
 export default {
     async register(req, res) {
         try {
-            const { name, email, password, role } = req.body;
-            if (!name || !email || password) {
+            const { name, email, password } = req.body;
+            if (!name || !email || !password) {
                 return res.status(400).json({ message: "Dados incompletos" })
             }
             const userExists = await User.findOne({ where: { email } });
@@ -44,7 +44,7 @@ export default {
                 return res.status(401).json({ message: "Credenciais inválidas" });
             }
             const isPasswordValid = await bcrypt.compare(password, user.password);
-            if (isPasswordValid) {
+            if (!isPasswordValid) {
                 return res.status(401).json({ message: "Credenciais inválidas" });
             }
             const payload = {
