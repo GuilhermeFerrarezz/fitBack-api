@@ -11,8 +11,6 @@ const User = sequelize.define("User", {
         unique: true
     },
     name: DataTypes.STRING,
-    login: DataTypes.STRING,
-    profileUrl: DataTypes.STRING,
     email: {
         type: DataTypes.STRING,
         unique: true
@@ -20,6 +18,11 @@ const User = sequelize.define("User", {
     password: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    avatar: {
+      type: DataTypes.STRING, 
+      allowNull: true
     }
+
 })
 export default User;

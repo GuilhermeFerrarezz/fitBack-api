@@ -17,7 +17,23 @@ const createRefreshToken = async (user) => {
             expiresAt: expiresAt.getTime()
         });
         return refreshToken.token;
+}
+    
+const persistUser = async (payload)=>{
+        const [user] = await User.findOrCreate({
+            where: { googleId: payload.googleId },
+            defaults: {
+                googleId: payload.googleId,
+                name: payload.name,
+                email: payload.email,
+                avatar: payload.avatar
+            }
+        })
+        return user
+    
     }
+
+
 export default {
     async register(req, res) {
         try {
@@ -146,6 +162,58 @@ export default {
             return res.status(500).send({ message: err })
         }
 
+    },
+
+    
+
+
+
+    async googleLogin(req, res) {
+        try {
+            const { token } = req.body
+            if (!token) {
+                return res.status(400).json({ error: 'Token is required' });
+            }
+            const response = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const googleData = response.data
+            console.log(googleData)
+            const userPayload = {
+                googleId: googleData.id,
+                name: googleData.name,
+                email: googleData.email,
+                avatar: googleData.picture
+            }
+            const user = await persistUser(userPayload)
+            const tokenPayload = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar
+            }
+
+            const jwtToken = jwt.sign(
+                { user: JSON.stringify(tokenPayload) },
+                JWT_SECRET,
+                { expiresIn: '15m' }
+            );
+            const refreshToken = await createRefreshToken(user)
+            res.status(200).json({
+                token: jwtToken,
+                user: user,
+                refreshToken: refreshToken
+            })
+            return googleData
+        } catch (err) {
+            console.log("err", err.response?.data || err.message)
+            res.status(500).json({message: "Error while trying to authenticate", erro: err.message})
+            
+        }
+        
+
     }
+
+
 
 };
