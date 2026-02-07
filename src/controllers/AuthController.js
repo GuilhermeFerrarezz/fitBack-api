@@ -2,11 +2,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import qs from 'query-string';
-import User from '../models/user.js';
+import db from '../models/index.js'
 import { JWT_SECRET } from '../middlewares/auth.js';
-import RefreshToken from '../models/RefreshToken.js';
 import { v4 as uuidv4 } from 'uuid';
 import { Op } from 'sequelize'; 
+const User = db.User
+const RefreshToken = db.RefreshToken
 const createRefreshToken = async (user) => {
         const expiresAt = new Date();
         expiresAt.setSeconds(expiresAt.getSeconds() + 604800);
@@ -98,7 +99,9 @@ export default {
             console.log('login')
             const refreshToken = await createRefreshToken(user)
             
-            return res.status(200).json({ data: { user: payload, token, refreshToken } })
+            return res.status(200).json({ token,
+                user: payload,
+                refreshToken: refreshToken })
         } catch (error) {
             return res.status(500).json({ message: "Erro no login", error })
         }
@@ -174,6 +177,7 @@ export default {
             if (!token) {
                 return res.status(400).json({ error: 'Token is required' });
             }
+            //console.log('Token ', token)
             const response = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -207,7 +211,7 @@ export default {
             return googleData
         } catch (err) {
             console.log("err", err.response?.data || err.message)
-            res.status(500).json({message: "Error while trying to authenticate", erro: err.message})
+            res.status(500).json({message: "Error while trying to authenticate", erro: err.message, token: token})
             
         }
         

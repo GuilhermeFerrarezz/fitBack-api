@@ -20,5 +20,5 @@ const RefreshToken = sequelize.define("RefreshToken", {
 RefreshToken.verifyExpiration = (token) => {
     return token.expiresAt.getTime() < new Date().getTime();
 }
-RefreshToken.belongsTo(User, { foreignKey: "userId" });
+
 export default RefreshToken;
