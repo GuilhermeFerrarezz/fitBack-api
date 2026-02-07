@@ -1,26 +1,24 @@
-
+import Exercicio from '../models/exercicio.js';
 import db from '../models/index.js'
 import { Op } from 'sequelize';
-const Exercicio = db.Exercicio
+const Ficha = db.Ficha
 export default {
+
     async create(req, res) {
-        const { name, peso, series, repeticoes, observacoes } = req.body;
-        const fichaId = req.params.fichaId
+        const nome = req.body.name
         const userId = req.userId
-        if (!name || !fichaId || !userId) {
-            return res.status(400).json({ message: "Dados incompletos" })
+        if (!nome || !userId) {
+            res.status(400).send({
+                message: "Conteúdo não pode ser vazio"
+            })
+            return;
         }
         try {
-            const exercicio = await Exercicio.create({
-                name,
-                peso,
-                series,
-                repeticoes,
-                observacoes,
-                UserId: userId,
-                FichaId: fichaId
+            const ficha = await Ficha.create({
+                name: nome,
+                UserId: userId
             })
-            res.status(201).json(exercicio)
+            res.status(201).json(ficha)
         } catch (error) {
             res.status(400).json({ error: error.message })
 
@@ -29,99 +27,95 @@ export default {
 
     async findAll(req, res) {
         const userId = req.userId
-        const fichaId = req.params.fichaId
-        if (!userId || !fichaId) {
+        if (!userId) {
             res.status(400).send({
                 message: "Id do usuário não pode ser vazio"
             })
         }
-        try {
-            const exercicios = await Exercicio.findAll({ where: { FichaId: fichaId, UserId: userId } })
-            res.json(exercicios)
-        } catch (error) {
-            res.status(500).json({ error: error.message })
+            try {
+                const fichas = await Ficha.findAll({ where: { UserId: userId } })
+                res.json(fichas)
+            } catch (error) {
+                res.status(500).json({ error: error.message })
 
-        }
+            }
 
-    },
+},
 
     async findOne(req, res) {
-        const userId = req.userId
-        const fichaId = req.params.fichaId
-        const id = req.params.id;;
-        if (!id || !fichaId || !userId) {
+        const id = req.params.id;
+        const userId = req.userId;
+        if (!id || !userId) {
             res.status(400).send({
                 message: "ID não pode ser vazio"
             })
             return
         }
         try {
-            const exercicio = await Exercicio.findOne({
+            const ficha = await Ficha.findOne({
                 where: {
                     id: id,
-                    FichaId: fichaId
-                }
-            })
-            if (!exercicio) {
-                return res.status(404).json({ error: 'Exercicio não encontrada' })
+                    UserId: userId
+                },
+                include: [
+                    {
+                        model: Exercicio,
+
+                    }
+            ]})
+            if (!ficha) {
+                return res.status(404).json({ error: 'Ficha não encontrada' })
             }
-            res.json(exercicio)
+            res.json(ficha)
         } catch (error) {
             res.status(500).json({ error: error.message })
         }
     },
 
     async update(req, res) {
-        const userId = req.userId
-        const { name, peso, series, repeticoes, observacoes } = req.body;
-        const id = req.params.id;
-        const fichaId = req.params.fichaId
-        if (!name || !id || !userId || !fichaId) {
+        const nome = req.body.name
+        const id = req.params.id
+        const userId = req.userId;
+        if (!nome || !id || !userId) {
             res.status(400).send({
                 message: "Conteúdo não pode ser vazio"
             })
             return;
         }
         try {
-            const exercicio = await Exercicio.findOne({
-                where: { id: id, FichaId: fichaId, UserId: userId }
+            const ficha = await Ficha.findOne({
+                where: {id: id, UserId: userId}
             })
-            if (!exercicio) {
-                return res.status(404).json({ error: 'Exercicio não encontrada' })
+            if (!ficha) {
+                return res.status(404).json({ error: 'Ficha não encontrada' })
             }
-            await exercicio.update({
-                name,
-                peso,
-                series,
-                repeticoes,
-                observacoes,
-                FichaId: fichaId
+            await ficha.update({
+                name: nome
             })
-            res.json(exercicio)
+            res.json(ficha)
         } catch (error) {
             res.status(400).json({ error: error.message })
         }
     },
 
     async delete(req, res) {
-        const userId = req.userId
-        const id = req.params.id;
-        const fichaId = req.params.fichaId
-        if (!id || !fichaId || !userId) {
+        const id = req.params.id
+        const userId = req.userId;
+        if (!id || !userId) {
             res.status(400).send({
                 message: "Id não pode ser vazio"
             })
             return;
         }
         try {
-            const exercicio = await Exercicio.findOne({
-                where: { id: id, FichaId: fichaId, UserId: userId }
+            const ficha = await Ficha.findOne({
+                where: {id: id, UserId: userId}
             })
-            if (!exercicio) {
-                return res.status(404).json({ error: 'Exercicio não encontrada' })
+            if (!ficha) {
+                return res.status(404).json({ error: 'Ficha não encontrada' })
             }
-            await exercicio.destroy()
-            res.status(204).json({ message: 'Deletado com sucesso' })
+            await ficha.destroy()
+            res.status(204).json({ message: 'Deletado com sucesso'})
         } catch (error) {
             res.status(400).json({ error: error.message })
         }
