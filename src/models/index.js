@@ -3,8 +3,6 @@ import User from './user.js';
 import RefreshToken from "./RefreshToken.js";
 import Ficha from './ficha.js'
 import Exercicio from "./exercicio.js";
-import Ficha_Exercicio from "./ficha_exercicios.js";
-
 
 User.hasOne(RefreshToken, {
     foreignKey: 'userId',
@@ -16,22 +14,28 @@ RefreshToken.belongsTo(User,
         foreignKey: "userId"      
     });
 
-User.hasMany(Ficha);
-Ficha.belongsTo(User)
+User.hasMany(Ficha, {
+    onDelete: "CASCADE"
+});
+Ficha.belongsTo(User);
 
-Ficha.belongsToMany(Exercicio, { through: Ficha_Exercicio });
-Exercicio.belongsToMany(Ficha, { through: Ficha_Exercicio })
+User.hasMany(Exercicio, {
+    onDelete: "CASCADE"
 
-Ficha.hasMany(Ficha_Exercicio);
-Ficha_Exercicio.belongsTo(Exercicio);
+});
+Exercicio.belongsTo(User)
+
+Ficha.hasMany(Exercicio, {
+    onDelete: "CASCADE"
+});
+Exercicio.belongsTo(Ficha);
 
 const db = {
     sequelize,
     User,
     RefreshToken,
     Ficha,
-    Exercicio,
-    Ficha_Exercicio
+    Exercicio
 }
 export default db
 

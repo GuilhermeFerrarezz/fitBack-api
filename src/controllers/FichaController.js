@@ -2,6 +2,7 @@ import Exercicio from '../models/exercicio.js';
 import db from '../models/index.js'
 import { Op } from 'sequelize';
 const Ficha = db.Ficha
+const Ficha_Exercicio = db.Ficha_Exercicio
 export default {
 
     async create(req, res) {
@@ -59,10 +60,7 @@ export default {
                 },
                 include: [
                     {
-                        model: Exercicio,
-                        through: {
-                        attrbutes: ['series', 'repeticoes', 'peso', 'observacoes']
-                    }
+                        model: Exercicio,          
                 }
             ]})
             if (!ficha) {

@@ -2,14 +2,24 @@ import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 const Exercicio = sequelize.define("Exercicio", {
     id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUID,
-        primaryKey: true,
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     name: {
         type: DataTypes.STRING,
-        unique: true
     },
-
+    peso: {
+        type: DataTypes.INTEGER,
+    },
+    series: {
+        type: DataTypes.INTEGER,
+    },
+    repeticoes: {
+        type: DataTypes.INTEGER,
+    },
+    observacoes: {
+        type: DataTypes.STRING,
+    },
 })
-export default Exercicio;
+export default Exercicio
