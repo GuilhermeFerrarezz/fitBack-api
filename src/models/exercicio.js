@@ -6,7 +6,7 @@ const Exercicio = sequelize.define("Exercicio", {
         defaultValue: DataTypes.UUID,
         primaryKey: true,
     },
-    nome: {
+    name: {
         type: DataTypes.STRING,
         unique: true
     },

@@ -12,7 +12,11 @@ export function tokenValidated(req, res, next) {
     }
     try {
         const payload = jsonwebtoken.verify(token, JWT_SECRET);
+        console.log('Payload: ', payload.user)
         req.headers.user = payload.user;
+        const userObject = JSON.parse(payload.user);
+        req.userId = userObject.id
+        //console.log('User ID: ', userObject.id)
         return next();
     } catch (error) {
         console.log(error);
