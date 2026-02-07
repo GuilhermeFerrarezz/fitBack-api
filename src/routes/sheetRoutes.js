@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { tokenValidated } from "../middlewares/auth.js";
+import FichaController from "../controllers/FichaController.js";
 const router = Router();
 router.use(tokenValidated);
 router.get("/private", (req, res) => {
@@ -9,6 +10,14 @@ router.get("/private", (req, res) => {
         data: {userLogged: currentUser}
     })
 })
+
+
+router.post("/ficha", FichaController.create)
+router.get("/fichas", FichaController.findAll)
+router.get("/ficha/:id", FichaController.findOne)
+router.put("/ficha/:id", FichaController.update)
+router.delete("/ficha/:id", FichaController.delete)
+
 
 
 
