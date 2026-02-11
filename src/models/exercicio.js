@@ -10,13 +10,16 @@ const Exercicio = sequelize.define("Exercicio", {
         type: DataTypes.STRING,
     },
     peso: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
+    },
+    pesoType: {
+        type: DataTypes.STRING
     },
     series: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
     },
     repeticoes: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
     },
     observacoes: {
         type: DataTypes.STRING,

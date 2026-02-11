@@ -94,7 +94,7 @@ export default {
             const token = jwt.sign(
                 { user: JSON.stringify(payload) },
                 JWT_SECRET,
-                { expiresIn: '15m', }
+                { expiresIn: '10m', }
             )
             console.log('login')
             const refreshToken = await createRefreshToken(user)
@@ -137,7 +137,7 @@ export default {
             const newAccessToken = jwt.sign(
                 { user: JSON.stringify(payload) },
                 JWT_SECRET,
-                { expiresIn: '15m', }
+                { expiresIn: '10m', }
             );
             return res.status(200).json({
                 accessToken: newAccessToken,
@@ -200,7 +200,7 @@ export default {
             const jwtToken = jwt.sign(
                 { user: JSON.stringify(tokenPayload) },
                 JWT_SECRET,
-                { expiresIn: '15m' }
+                { expiresIn: '10m' }
             );
             const refreshToken = await createRefreshToken(user)
             res.status(200).json({

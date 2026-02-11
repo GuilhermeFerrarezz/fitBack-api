@@ -5,7 +5,7 @@ const Exercicio = db.Exercicio
 export default {
 
     async create(req, res) {
-        const { name, peso, series, repeticoes, observacoes } = req.body;
+        const { name, peso, pesoType, series, repeticoes, observacoes } = req.body;
         const fichaId = req.params.fichaId
         const userId = req.userId
         if (!name || !fichaId || !userId) {
@@ -15,6 +15,7 @@ export default {
             const exercicio = await Exercicio.create({
                 name,
                 peso,
+                pesoType,
                 series,
                 repeticoes,
                 observacoes,
@@ -74,7 +75,7 @@ export default {
 
     async update(req, res) {
         const userId = req.userId
-        const { name, peso, series, repeticoes, observacoes } = req.body;
+        const { name, peso, pesoType, series, repeticoes, observacoes } = req.body;
         const id = req.params.id;
         const fichaId = req.params.fichaId
         if (!name || !id || !userId || !fichaId) {
