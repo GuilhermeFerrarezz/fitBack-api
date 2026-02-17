@@ -1,6 +1,6 @@
 # FitBack API 
 
-This repository contains the RESTful API that powers the **FitBack** mobile application. It handles user authentication, data persistence, and provides endpoints to manage gym workout routines, exercises, and sets.
+This repository contains the RESTful API that powers the **[FitBack](https://github.com/GuilhermeFerrarezz/FitBack)** mobile application. It handles user authentication, data persistence, and provides endpoints to manage gym workout routines, exercises, and sets.
 
 ## Features
 
@@ -26,7 +26,7 @@ To run this project locally, you need to have the following installed:
 * [Git](https://git-scm.com)
 * A SQL Database client (if using PostgreSQL locally)
 
-### ⚙️ Environment Variables
+### Environment Variables
 
 Create a `.env` file in the root directory of the project based on the `.env.example` file (or configure the following variables):
 
